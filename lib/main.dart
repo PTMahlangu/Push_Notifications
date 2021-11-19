@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:pushnotification/notification.dart';
 
 Future<void> backgroundNotification(RemoteMessage message) async {
-  print(message.data.toString());
+  
+  PushNotification.showNotification(message,1);
 }
 
 void main() async {
@@ -39,27 +40,32 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int index = 0;
   @override
   void initState() {
     super.initState();
 
     FirebaseMessaging.instance.getInitialMessage().then((message) {
+
       if (message != null) {
-        print("**************");
-        print(message.data["data"]);
+
+        PushNotification.showNotification(message, index);
+        index++;
       }
     });
     // foreground
     FirebaseMessaging.onMessage.listen((message) {
-      if (message.notification != null) {
-        print(message.notification!.body);
-        print(message.notification!.title);
 
-        PushNotification.display(message);
+      if (message.notification != null) {
+     
+        PushNotification.showNotification(message, index);
+        index++;
       }
     });
-    FirebaseMessaging.onMessageOpenedApp.listen((event) {
-      PushNotification.display(event);
+    // called when a user presses a notification message displayed
+    FirebaseMessaging.onMessageOpenedApp.listen((message) {
+
+      //  Go somewhere
     });
   }
 
@@ -78,6 +84,9 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
       ),
     );
   }
